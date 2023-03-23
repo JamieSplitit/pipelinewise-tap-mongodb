@@ -4,7 +4,7 @@ This is a [Singer](https://singer.io) tap that produces JSON-formatted data foll
 
 ## Custom setup
 - install with `meltano add --custom extractor tap-mongodb`
-  - namespace: tap-snowflake-key-auth
+  - namespace: tap-mongodb
   - pip_url: git+https://github.com/JamieSplitit/pipelinewise-tap-mongodb.git
   - executable name: tap-mongodb
   - settings: `srv:boolean,port:integer,replica_set,ssl:boolean,verify_mode:boolean,include_schemas_in_destination_stream_name:boolean,update_buffer_size:integer,await_time_ms:integer`

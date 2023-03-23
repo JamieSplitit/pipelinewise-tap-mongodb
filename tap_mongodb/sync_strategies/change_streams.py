@@ -102,7 +102,7 @@ def sync_database(database: Database,
     with database.watch(
             [{'$match': {
                 '$or': [
-                    {'operationType': 'insert'}, {'operationType': 'update'}, {'operationType': 'delete'}
+                    {'operationType': 'insert'}, {'operationType': 'replace'}, {'operationType': 'update'}, {'operationType': 'delete'}
                 ],
                 '$and': [
                     # watch collections of selected streams
@@ -145,7 +145,7 @@ def sync_database(database: Database,
 
             operation = change['operationType']
 
-            if operation == 'insert':
+            if operation == 'insert' or operation == 'replace':
                 singer.write_message(common.row_to_singer_record(stream=streams_to_sync[tap_stream_id],
                                                                  row=change['fullDocument'],
                                                                  time_extracted=utils.now(),

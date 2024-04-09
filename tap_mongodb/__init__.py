@@ -23,8 +23,6 @@ LOGGER = singer.get_logger('tap_mongodb')
 
 REQUIRED_CONFIG_KEYS = [
     'host',
-    'user',
-    'password',
     'auth_database',
     'database'
 ]
@@ -48,8 +46,11 @@ def do_discover(client: MongoClient, config: Dict):
     """
     streams = []
 
-    if config['database'] not in get_databases(client, config):
-        raise NoReadPrivilegeException(config['user'], config['database'])
+    if config['auth_database'] == '$external':
+        pass
+    else:
+        if config['database'] not in get_databases(client, config):
+            raise NoReadPrivilegeException(config['user'], config['database'])
 
     database = client[config['database']]
 
@@ -267,6 +268,10 @@ def get_connection_string(config: Dict):
     if config.get('replica_set'):
         connection_query['replicaSet'] = config['replica_set']
 
+    
+    if config.get('auth_mechanism'):
+        connection_query['authMechanism'] = config['auth_mechanism']
+
     if use_ssl:
         connection_query['tls'] = 'true'
 
@@ -278,8 +283,11 @@ def get_connection_string(config: Dict):
 
     port = "" if srv else f":{int(config['port'])}"
 
-    connection_string = f'{"mongodb+srv" if srv else "mongodb"}://{config["user"]}:' \
-                        f'{config["password"]}@{config["host"]}' \
+    srv_prefix = "mongodb+srv" if srv else "mongodb"
+
+    user_pass = '' if connection_query.get('authMechanism') == 'MONGODB-AWS' else f'{config["user"]}:{config["password"]}@' 
+    
+    connection_string = f'{srv_prefix}://{user_pass}{config["host"]}' \
                         f'{port}/{config["database"]}?{query_string}'
 
     return connection_string

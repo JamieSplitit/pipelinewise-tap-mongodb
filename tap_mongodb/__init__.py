@@ -46,8 +46,11 @@ def do_discover(client: MongoClient, config: Dict):
     """
     streams = []
 
-    if config['database'] not in get_databases(client, config):
-        raise NoReadPrivilegeException(config['user'], config['database'])
+    if config['auth_database'] == '$external':
+        pass
+    else:
+        if config['database'] not in get_databases(client, config):
+            raise NoReadPrivilegeException(config['user'], config['database'])
 
     database = client[config['database']]
 

@@ -23,8 +23,6 @@ LOGGER = singer.get_logger('tap_mongodb')
 
 REQUIRED_CONFIG_KEYS = [
     'host',
-    'user',
-    'password',
     'auth_database',
     'database'
 ]
